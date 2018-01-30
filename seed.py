@@ -39,6 +39,8 @@ def load_movies():
 
     print "Movies"
 
+    Movie.query.delete()
+
     # Read u.user file and insert data
     for row in open("seed_data/u.item"):
         row = row.rstrip().split("|")
@@ -60,26 +62,23 @@ def load_movies():
 def load_ratings():
     """Load ratings from u.data into database."""
 
-
     print "Ratings"
 
-    # Read u.user file and insert data
-    for row in open("seed_data/u.item"):
-        row = row.rstrip().split("|")
-        movie_info = row[0:3] + [row[4]]
-        movie_id, title, released_at, imdb_url = movie_info
+    Rating.query.delete()
 
-        movie = Movie(movie_id=movie_id,
-                      title=title,
-                      released_at=released_at,
-                      imdb_url=imdb_url)
+    # Read u.user file and insert data
+    for row in open("seed_data/u.data"):
+        row = row.rstrip().split()
+        movie_id, user_id, score = row[0:3]
+
+        rating = Rating(movie_id=movie_id,
+                        user_id=user_id,
+                        score=score)
         # We need to add to the session or it won't ever be stored
-        db.session.add(movie)
+        db.session.add(rating)
 
     # Once we're done, we should commit our work
     db.session.commit()
-
-
 
 
 

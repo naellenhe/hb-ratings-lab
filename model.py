@@ -38,7 +38,7 @@ class Movie(db.Model):
     movie_id = db.Column(db.Integer,autoincrement= True, primary_key=True)
     title = db.Column(db.String(100),nullable=False)
     released_at = db.Column(db.DateTime, nullable=False)
-    imdb_url = db.Column(db.String(170), nullable=False)
+    imdb_url = db.Column(db.String(200), nullable=False)
 
     def __repr__(self):
         """show info about rating"""
@@ -78,7 +78,7 @@ def connect_to_db(app):
 
 
 if __name__ == "__main__":
-    # As a convenience, if we run this module interactively, it will leave
+    # As a convenience, if we run this modlsy, it will leave
     # you in a state of being able to work with the database directly.
 
     from server import app
