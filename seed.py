@@ -46,7 +46,7 @@ def load_movies():
         row = row.rstrip().split("|")
         movie_info = row[0:3] + [row[4]]
         movie_id, title, released_at, imdb_url = movie_info
-        title = title[:-6]
+        title = title[:-7]
 
         movie = Movie(movie_id=movie_id,
                       title=title,
