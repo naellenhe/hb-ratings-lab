@@ -30,6 +30,14 @@ def user_list():
     users = User.query.all()
     return render_template("user_list.html", users= users)
 
+@app.route('/users/<user_id>')
+def display_user_details(user_id):
+    """ Show user details"""
+
+    user = db.session.query(User).filter(User.user_id == user_id).first()
+    return render_template("user_details.html", user = user)
+
+
 @app.route('/register', methods=['GET'])
 def register_form():
     """For user to register with email"""
@@ -51,6 +59,8 @@ def register_process():
     user_exist = check_db.first()
 
     if not user_exist:
+        # if the user does not exist then we instantiate a user and the info
+        #to the db
         user = User(email=email, password=password, age=age,zipcode=zipcode)
         db.session.add(user)
         db.session.commit()
@@ -74,13 +84,14 @@ def check_login():
 
     check_db = db.session.query(User).filter(User.email == email, User.password==password)
 
-    user_exist = check_db.first()
+    user = check_db.first()
 
-    if not user_exist:
-        return redirect('register')
+    if not user:
+        return redirect('/register')
     else:
+        session['user_id'] = user.user_id
         flash('You successfully logged in')
-        return redirect('/')
+        return render_template('/', )
 
 
 
