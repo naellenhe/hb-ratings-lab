@@ -48,12 +48,54 @@ def movie_list():
     return render_template("movie_list.html", movies=movies)
 
 
-@app.route('/movies/<movie_id>')
-def display_movie_details(movie_id):
-    """Show movie details"""
+# @app.route('/movies/<movie_id>')
+# def display_movie_details(movie_id):
+#     """Show movie details"""
+
+#     movie = Movie.query.get(movie_id)
+#     return render_template("movie_details.html", movie=movie)
+
+
+@app.route("/movies/<int:movie_id>", methods=['GET'])
+def movie_detail(movie_id):
+    """Show info about movie.
+
+    If a user is logged in, let them add/edit a rating.
+    """
 
     movie = Movie.query.get(movie_id)
-    return render_template("movie_details.html", movie=movie)
+
+    user_id = session.get("user_id")
+
+    if user_id:
+        user_rating = Rating.query.filter_by(
+            movie_id=movie_id, user_id=user_id).first()
+
+    else:
+        user_rating = None
+
+    # Get average rating of movie
+
+    rating_scores = [r.score for r in movie.ratings]
+    avg_rating = float(sum(rating_scores)) / len(rating_scores)
+
+    prediction = None
+
+    # Prediction code: only predict if the user hasn't rated it.
+
+    if (not user_rating) and user_id:
+        user = User.query.get(user_id)
+        if user:
+            prediction = user.predict_rating(movie)
+            # above line - predict rating is a method with the user obj
+
+    return render_template(
+        "movie_details.html",
+        movie=movie,
+        user_rating=user_rating,
+        average=avg_rating,
+        prediction=prediction
+        )
 
 
 @app.route('/new_rating', methods=['POST'])

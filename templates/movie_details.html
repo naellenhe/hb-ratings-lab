@@ -15,6 +15,18 @@
     <input type='submit' value='Submit the rating'>
   </form>
 {% endif %}
+
+{% if user_rating %}
+Your rating : {{ user_rating.score }}
+{% endif %}
+<br>
+Average rating for this movie: {{ average }}
+<br>
+{% if not user_rating %}
+Prediction of your rating: {{ prediction }}
+{% endif %}
+
+
   <ul>
     <li>
       Movie id :{{ movie.movie_id }}
