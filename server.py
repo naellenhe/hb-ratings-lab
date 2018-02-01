@@ -23,19 +23,60 @@ def index():
     """Homepage."""
     return render_template("homepage.html")
 
+
 @app.route('/users')
 def user_list():
     """Show list of users"""
 
     users = User.query.all()
-    return render_template("user_list.html", users= users)
+    return render_template("user_list.html", users=users)
+
 
 @app.route('/users/<user_id>')
 def display_user_details(user_id):
     """ Show user details"""
 
-    user = db.session.query(User).filter(User.user_id == user_id).first()
-    return render_template("user_details.html", user = user)
+    user = User.query.get(user_id)
+    return render_template("user_details.html", user=user)
+
+
+@app.route('/movies')
+def movie_list():
+    """Show list of movies"""
+
+    movies = Movie.query.order_by(Movie.title).all()
+    return render_template("movie_list.html", movies=movies)
+
+
+@app.route('/movies/<movie_id>')
+def display_movie_details(movie_id):
+    """Show movie details"""
+
+    movie = Movie.query.get(movie_id)
+    return render_template("movie_details.html", movie=movie)
+
+
+@app.route('/new_rating', methods=['POST'])
+def update_rating():
+    """Update a rating """
+
+    movie_id = request.form.get("movie_id")
+    score = request.form.get('score')
+    user_id = session['user_id']
+
+    rating = db.session.query(Rating).filter(Rating.user_id == user_id, Rating.movie_id==movie_id).first()
+
+    if not rating:
+        rating = Rating(movie_id=movie_id, user_id=session['user_id'], score=score)
+        db.session.add(rating)
+        db.session.commit()
+    else:
+        rating.score = score
+        db.session.commit()
+
+    flash('You\'ve successfully rated for the movie!')
+
+    return redirect("/movies/" + str(movie_id))
 
 
 @app.route('/register', methods=['GET'])
@@ -54,18 +95,18 @@ def register_process():
     age = request.form.get('age')
     zipcode = request.form.get('zipcode')
 
-    check_db = db.session.query(User).filter(User.email == email)
+    user = db.session.query(User).filter(User.email == email).first()
 
-    user_exist = check_db.first()
-
-    if not user_exist:
+    if not user:
         # if the user does not exist then we instantiate a user and the info
         #to the db
-        user = User(email=email, password=password, age=age,zipcode=zipcode)
+        user = User(email=email, password=password, age=age, zipcode=zipcode)
         db.session.add(user)
         db.session.commit()
 
-    return redirect("/login")
+    session['user_id'] = user.user_id
+    flash('You successfully registerd and logged in')
+    return redirect("/users/" + str(user.user_id))
 
 
 @app.route('/login', methods=['GET'])
@@ -82,17 +123,18 @@ def check_login():
     email = request.form.get("email")
     password = request.form.get('password')
 
-    check_db = db.session.query(User).filter(User.email == email, User.password==password)
+    check_db = db.session.query(User).filter(User.email == email, User.password == password)
 
     user = check_db.first()
 
     if not user:
+        flash('Please regirster your account')
+
         return redirect('/register')
     else:
         session['user_id'] = user.user_id
         flash('You successfully logged in')
-        return render_template('/', )
-
+        return redirect('/users/' + str(user.user_id))
 
 
 if __name__ == "__main__":

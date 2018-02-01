@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+
+  <h2>Movie Info</h2>
+  <form action='/new_rating' method="POST">
+    Rate this movie
+    <input type='hidden' name='movie_id' value= {{ movie.movie_id }}>
+    <input type='radio' name='score' value=1>1
+    <input type='radio' name='score' value=2>2
+    <input type='radio' name='score' value=3>3
+    <input type='radio' name='score' value=4>4
+    <input type='radio' name='score' value=5>5
+    <input type='submit' value='Submit the rating'>
+  </form>
+
+  <ul>
+    <li>
+      Movie id :{{ movie.movie_id }}
+    </li>
+    <li>
+      Movit title: {{ movie.title }}
+    </li>
+    <li>
+      Released at : {{ movie.released_at }}
+    </li>
+    <li> Ratings:
+      <ul> {% for r in movie.ratings %}
+        <li>
+          <a href="/users/{{ r.user_id }}">
+          User: {{ r.user_id }}</a> (rated: {{r.score}})
+
+        </li>
+
+        {% endfor %}
+      </ul>
+    </li>
+  </ul>
+
+{% endblock %}
