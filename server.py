@@ -60,14 +60,14 @@ def display_movie_details(movie_id):
 def update_rating():
     """Update a rating """
 
-    movie_id = request.form.get("movie_id")
-    score = request.form.get('score')
+    movie_id = int(request.form.get("movie_id"))
+    score = int(request.form.get('score'))
     user_id = session['user_id']
 
-    rating = db.session.query(Rating).filter(Rating.user_id == user_id, Rating.movie_id==movie_id).first()
+    rating = db.session.query(Rating).filter(Rating.user_id == user_id, Rating.movie_id == movie_id).first()
 
     if not rating:
-        rating = Rating(movie_id=movie_id, user_id=session['user_id'], score=score)
+        rating = Rating(movie_id=movie_id, user_id=user_id, score=score)
         db.session.add(rating)
         db.session.commit()
     else:
@@ -150,4 +150,3 @@ if __name__ == "__main__":
     DebugToolbarExtension(app)
 
     app.run(port=5000, host='0.0.0.0')
-

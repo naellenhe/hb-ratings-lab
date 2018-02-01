@@ -2,17 +2,19 @@
 {% block content %}
 
   <h2>Movie Info</h2>
+
+{% if "user_id" in session %}
   <form action='/new_rating' method="POST">
     Rate this movie
     <input type='hidden' name='movie_id' value= {{ movie.movie_id }}>
-    <input type='radio' name='score' value=1>1
-    <input type='radio' name='score' value=2>2
-    <input type='radio' name='score' value=3>3
-    <input type='radio' name='score' value=4>4
-    <input type='radio' name='score' value=5>5
+    <input type='radio' name='score' value='1'>1
+    <input type='radio' name='score' value='2'>2
+    <input type='radio' name='score' value='3'>3
+    <input type='radio' name='score' value='4'>4
+    <input type='radio' name='score' value='5'>5
     <input type='submit' value='Submit the rating'>
   </form>
-
+{% endif %}
   <ul>
     <li>
       Movie id :{{ movie.movie_id }}
